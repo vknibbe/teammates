@@ -268,6 +268,7 @@ public final class Const {
                 + " must be valid non-negative numbers with precision up to 2 decimal places.";
         public static final String MCQ_ERROR_EMPTY_MCQ_OPTION = "The Mcq options cannot be empty";
         public static final String MCQ_ERROR_OTHER_CONTENT_NOT_PROVIDED = "No text provided for other option";
+        public static final String MCQ_ERROR_DUPLICATE_MCQ_OPTION = "The Mcq options cannot be duplicate";
 
         // Msq
         public static final int MSQ_MIN_NUM_OF_CHOICES = 2;
@@ -298,6 +299,7 @@ public final class Const {
                 "The weights for the choices of a " + Const.FeedbackQuestionTypeNames.MSQ
                 + " must be valid numbers with precision up to 2 decimal places.";
         public static final String MSQ_ANSWER_NONE_OF_THE_ABOVE = "None of the above";
+        public static final String MSQ_ERROR_DUPLICATE_MSQ_OPTION = "The Msq options cannot be duplicate";
 
         // Numscale
         public static final String NUMSCALE_ERROR_MIN_MAX =
@@ -339,8 +341,12 @@ public final class Const {
         public static final String CONST_SUM_ERROR_UNIQUE = "Every option must be given a different number of points.";
         public static final String CONST_SUM_ERROR_SOME_UNIQUE =
                 "At least some options must be given a different number of points.";
+        public static final String CONST_SUM_ANSWER_OPTIONS_NOT_MATCH = "The answers are inconsistent with the options";
+        public static final String CONST_SUM_ANSWER_RECIPIENT_NOT_MATCH = "The answer is inconsistent with the recipient";
 
         // Rubric
+        public static final int RUBRIC_ANSWER_NOT_CHOSEN = -1;
+
         public static final int RUBRIC_MIN_NUM_OF_CHOICES = 2;
         public static final String RUBRIC_ERROR_NOT_ENOUGH_CHOICES =
                 "Too little choices for " + Const.FeedbackQuestionTypeNames.RUBRIC + ". Minimum number of options is: ";
@@ -356,6 +362,9 @@ public final class Const {
                 "The weights for the choices of each Sub-question of a "
                 + Const.FeedbackQuestionTypeNames.RUBRIC
                 + " must be valid numbers with precision up to 2 decimal places.";
+
+        public static final String RUBRIC_EMPTY_ANSWER = "Empty answer.";
+        public static final String RUBRIC_INVALID_ANSWER = "The answer for the rubric question is not valid.";
 
         // Text Question
         public static final String TEXT_ERROR_INVALID_RECOMMENDED_LENGTH = "Recommended length must be 0 or greater";
@@ -749,7 +758,7 @@ public final class Const {
         public static final String SESSION_REMIND_SUBMISSION = "/session/remind/submission";
         public static final String SESSION_REMIND_RESULT = "/session/remind/result";
         public static final String SESSION_STATS = "/session/stats";
-        public static final String SESSION_STUDENTS_RESPONSE = "/session/students/response";
+        public static final String SESSION_SUBMITTED_GIVER_SET = "/session/submitted/giverset";
         public static final String SESSIONS = "/sessions";
         public static final String BIN_SESSION = "/bin/session";
         public static final String QUESTIONS = "/questions";
@@ -766,20 +775,12 @@ public final class Const {
         public static final String SESSION_LINKS_RECOVERY = "/sessionlinksrecovery";
         public static final String NATIONALITIES = "/nationalities";
 
-        public static final String INSTRUCTOR_COURSES = "/instructor/courses";
-        public static final String INSTRUCTOR_COURSE_DETAILS = "/courses/details";
-
-        public static final String COURSE_STUDENT_DETAILS = "/courses/students/details";
-        public static final String STUDENT_COURSE = "/student/course";
         public static final String STUDENT_PROFILE_PICTURE = "/student/profilePic";
         public static final String STUDENT_PROFILE = "/student/profile";
         public static final String STUDENT_COURSES = "/student/courses";
         public static final String STUDENTS_CSV = "/students/csv";
         public static final String STUDENTS_AND_FEEDBACK_SESSION_DATA_SEARCH = "/studentsAndSessionData/search";
 
-        public static final String STUDENT_EDIT_DETAILS = "/students/editDetails";
-        public static final String COURSE_EDIT_DETAILS = "/instructors/course/details";
-        public static final String STUDENT_RECORDS = "/students/records";
         public static final String COURSE_ENROLL_STUDENTS = "/course/enroll/students";
     }
 
@@ -1031,6 +1032,40 @@ public final class Const {
         public static final String AMBIGUOUS_LOCAL_DATE_TIME_OVERLAP =
                 "The %s, %s, falls within the overlap period when clocks fall back at the end of DST. "
                         + "It can refer to %s or %s. It was resolved to %s.";
+    }
+
+    /**
+     * These are status messages related to students logic that may be shown to the user.
+     */
+    public static class StudentsLogicConst {
+        /**
+         * Error message when trying to create the same team in more than one section.
+         */
+        public static final String ERROR_INVALID_TEAM_NAME =
+                "Team \"%s\" is detected in both Section \"%s\" and Section \"%s\".";
+
+        /**
+         * Error message to be appended to the ERROR_INVALID_TEAM_NAME message.
+         */
+        public static final String ERROR_INVALID_TEAM_NAME_INSTRUCTION =
+                "Please use different team names in different sections.";
+
+        /**
+         * Error message when trying to enroll to a section that has maximum capacity.
+         */
+        public static final String ERROR_ENROLL_EXCEED_SECTION_LIMIT =
+                "You are trying enroll more than %s students in section \"%s\".";
+
+        /**
+         * Error message to be appended to the ERROR_ENROLL_EXCEED_SECTION_LIMIT message.
+         */
+        public static final String ERROR_ENROLL_EXCEED_SECTION_LIMIT_INSTRUCTION =
+                "To avoid performance problems, please do not enroll more than %s students in a single section.";
+
+        /**
+         * The maximum allowable number of students to be enrolled in a section.
+         */
+        public static final int SECTION_SIZE_LIMIT = 100;
     }
 
     /* These indicate status of an operation, but they are not shown to the user */

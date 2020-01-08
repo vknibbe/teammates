@@ -1,10 +1,11 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { finalize } from 'rxjs/operators';
 import { CourseService } from '../../../services/course.service';
 import { HttpRequestService } from '../../../services/http-request.service';
+import { LoadingBarService } from '../../../services/loading-bar.service';
 import { StatusMessageService } from '../../../services/status-message.service';
 import { StudentService } from '../../../services/student.service';
-import { Course, Courses, InstructorPrivilege, JoinState, Student, Students } from '../../../types/api-output';
+import { Course, Courses, InstructorPrivilege, Student, Students } from '../../../types/api-output';
 import { ErrorMessageOutput } from '../../error-message-output';
 import { StudentListSectionData, StudentListStudentData } from '../student-list/student-list-section-data';
 
@@ -23,7 +24,7 @@ interface CourseTab {
   studentListSectionDataList: StudentListSectionData[];
   hasTabExpanded: boolean;
   hasStudentLoaded: boolean;
-  stats?: Statistic;
+  stats: Statistic;
 }
 
 /**
@@ -35,28 +36,27 @@ interface CourseTab {
   styleUrls: ['./instructor-student-list-page.component.scss'],
 })
 export class InstructorStudentListPageComponent implements OnInit {
-  user: string = '';
+
   courseTabList: CourseTab[] = [];
 
   constructor(private httpRequestService: HttpRequestService,
               private courseService: CourseService,
               private studentService: StudentService,
               private statusMessageService: StatusMessageService,
-              private route: ActivatedRoute) {
+              private loadingBarService: LoadingBarService) {
   }
 
   ngOnInit(): void {
-    this.route.queryParams.subscribe((queryParams: any) => {
-      this.user = queryParams.user;
-      this.loadCourses();
-    });
+    this.loadCourses();
   }
 
   /**
    * Loads courses of current instructor.
    */
   loadCourses(): void {
+    this.loadingBarService.showLoadingBar();
     this.courseService.getAllCoursesAsInstructor('active')
+        .pipe(finalize(() => this.loadingBarService.hideLoadingBar()))
         .subscribe((courses: Courses) => {
           courses.courses.forEach((course: Course) => {
             const courseTab: CourseTab = {
@@ -64,6 +64,11 @@ export class InstructorStudentListPageComponent implements OnInit {
               studentListSectionDataList: [],
               hasTabExpanded: false,
               hasStudentLoaded: false,
+              stats: {
+                numOfSections: 0,
+                numOfStudents: 0,
+                numOfTeams: 0,
+              },
             };
 
             this.courseTabList.push(courseTab);
@@ -115,7 +120,7 @@ export class InstructorStudentListPageComponent implements OnInit {
             studentsInSection.forEach((student: Student) => {
               const studentData: StudentListStudentData = {
                 name : student.name,
-                status : (student.joinState === JoinState.JOINED) ? 'Joined' : 'Yet to Join',
+                status : student.joinState,
                 email : student.email,
                 team : student.teamName,
               };

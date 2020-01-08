@@ -29,7 +29,6 @@ export interface StudentProfileWithPicture {
 })
 export class StudentCourseDetailsPageComponent implements OnInit {
   Gender: typeof Gender = Gender; // enum
-  user: string = '';
 
   student: Student = {
     email: '',
@@ -45,9 +44,9 @@ export class StudentCourseDetailsPageComponent implements OnInit {
   course: Course = {
     courseId: '',
     courseName: '',
-    creationDate: '',
-    deletionDate: '',
-    timeZone: '',
+    timeZone: 'UTC',
+    creationTimestamp: 0,
+    deletionTimestamp: 0,
   };
 
   instructorDetails: Instructor[] = [];
@@ -65,7 +64,6 @@ export class StudentCourseDetailsPageComponent implements OnInit {
    */
   ngOnInit(): void {
     this.route.queryParams.subscribe((queryParams: any) => {
-      this.user = queryParams.user;
       this.loadStudent(queryParams.courseid);
       this.loadCourse(queryParams.courseid);
       this.loadInstructors(queryParams.courseid);

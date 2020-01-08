@@ -65,7 +65,6 @@ export class InstructorSessionEditPageComponent extends InstructorSessionBasePag
   FeedbackQuestionType: typeof FeedbackQuestionType = FeedbackQuestionType;
 
   // url param
-  user: string = '';
   courseId: string = '';
   feedbackSessionName: string = '';
 
@@ -166,7 +165,6 @@ export class InstructorSessionEditPageComponent extends InstructorSessionBasePag
 
   ngOnInit(): void {
     this.route.queryParams.subscribe((queryParams: any) => {
-      this.user = queryParams.user;
       this.courseId = queryParams.courseid;
       this.feedbackSessionName = queryParams.fsname;
 
@@ -192,11 +190,11 @@ export class InstructorSessionEditPageComponent extends InstructorSessionBasePag
         intent: Intent.FULL_DETAIL,
       };
       this.httpRequestService.get('/session', paramMap)
-        .subscribe((feedbackSession: FeedbackSession) => {
-          this.sessionEditFormModel = this.getSessionEditFormModel(feedbackSession);
-        }, (resp: ErrorMessageOutput) => {
-          this.statusMessageService.showErrorMessage(resp.error.message);
-        });
+          .subscribe((feedbackSession: FeedbackSession) => {
+            this.sessionEditFormModel = this.getSessionEditFormModel(feedbackSession);
+          }, (resp: ErrorMessageOutput) => {
+            this.statusMessageService.showErrorMessage(resp.error.message);
+          });
     });
   }
 
@@ -471,9 +469,9 @@ export class InstructorSessionEditPageComponent extends InstructorSessionBasePag
    */
   private loadResponseStatusForQuestion(model: QuestionEditFormModel): void {
     this.feedbackSessionsService.hasResponsesForQuestion(model.feedbackQuestionId)
-      .subscribe((resp: HasResponses) => {
-        model.isQuestionHasResponses = resp.hasResponses;
-      }, (resp: ErrorMessageOutput) => { this.statusMessageService.showErrorMessage(resp.error.message); });
+        .subscribe((resp: HasResponses) => {
+          model.isQuestionHasResponses = resp.hasResponses;
+        }, (resp: ErrorMessageOutput) => { this.statusMessageService.showErrorMessage(resp.error.message); });
   }
 
   /**
@@ -796,8 +794,15 @@ export class InstructorSessionEditPageComponent extends InstructorSessionBasePag
   /**
    * Handles 'Done Editing' click event.
    */
-  doneEditingHandler(): void {
-    this.router.navigateByUrl('/web/instructor/sessions');
+  doneEditingHandler(modal: any): void {
+    if (this.questionEditFormModels.some((q: QuestionEditFormModel) => q.isEditable)
+        || this.sessionEditFormModel.isEditable) {
+      this.modalService.open(modal).result.then(() => {
+        this.router.navigateByUrl('/web/instructor/sessions');
+      }, () => {});
+    } else {
+      this.router.navigateByUrl('/web/instructor/sessions');
+    }
     // TODO focus on the row of current feedback session in the sessions page
   }
 
@@ -805,8 +810,7 @@ export class InstructorSessionEditPageComponent extends InstructorSessionBasePag
    * Handles question 'Help' link click event.
    */
   questionsHelpHandler(): void {
-    window.open(`${environment.frontendUrl}/web/instructor/help`);
-    // TODO scroll down to the question specific section in the help page
+    this.navigationService.openNewWindow(`${environment.frontendUrl}/web/instructor/help#questions`);
   }
 
   /**
@@ -867,7 +871,7 @@ export class InstructorSessionEditPageComponent extends InstructorSessionBasePag
    * Previews the submission of the feedback session as a student.
    */
   previewAsStudent(): void {
-    window.open(`${environment.frontendUrl}/web/sessions/submission`
+    this.navigationService.openNewWindow(`${environment.frontendUrl}/web/sessions/submission`
         + `?courseid=${this.courseId}&fsname=${this.feedbackSessionName}&previewas=${this.emailOfStudentToPreview}`);
   }
 
@@ -875,7 +879,7 @@ export class InstructorSessionEditPageComponent extends InstructorSessionBasePag
    * Previews the submission of the feedback session as an instructor.
    */
   previewAsInstructor(): void {
-    window.open(`${environment.frontendUrl}/web/instructor/sessions/submission`
+    this.navigationService.openNewWindow(`${environment.frontendUrl}/web/instructor/sessions/submission`
         + `?courseid=${this.courseId}&fsname=${this.feedbackSessionName}&previewas=${this.emailOfInstructorToPreview}`);
   }
 
